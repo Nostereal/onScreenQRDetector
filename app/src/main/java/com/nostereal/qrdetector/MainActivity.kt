@@ -33,13 +33,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleSendImage(intent: Intent) {
-        (intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as? Uri).let {
-            if (it == null) {
+        (intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as? Uri).let { uri ->
+            if (uri == null) {
                 Log.e("M_MainActivity", "Uri from intent is null")
                 return
             }
-            val inputStream = contentResolver.openInputStream(it)
-            val drawableImg = Drawable.createFromStream(inputStream, it.toString())
+            val inputStream = contentResolver.openInputStream(uri)
+            val drawableImg = Drawable.createFromStream(inputStream, uri.toString())
             imageView.setImageDrawable(drawableImg)
             Log.d("M_MainActivity", "An Image must be loaded")
 
