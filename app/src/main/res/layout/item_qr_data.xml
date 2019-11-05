@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/qrTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:gravity="center"
+        android:paddingStart="@dimen/item_qr_data_title_start_padding"
+        android:paddingEnd="@dimen/item_qr_data_title_end_padding"
+        android:textColor="@color/textColorBlack"
+        android:textSize="@dimen/item_qr_data_title_text_size"
+        tools:text="Telegram" />
+
+    <TextView
+        android:id="@+id/qrRawValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="6"
+        android:autoLink="web"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:lines="1"
+        android:paddingStart="@dimen/item_qr_data_raw_value_start_padding"
+        android:paddingEnd="@dimen/item_qr_data_raw_value_end_padding"
+        android:textAlignment="center"
+        android:textColor="@color/textColorBlack"
+        android:textSize="@dimen/item_qr_data_raw_value_text_size"
+        tools:text="https://t.me/nostereal" />
+
+</LinearLayout>

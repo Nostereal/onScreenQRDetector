@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/bottomSheetDialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/item_qr_data_vertical_margin"
+        android:layout_marginBottom="@dimen/item_qr_data_vertical_margin"
+        android:gravity="center"
+        android:visibility="visible"
+        android:textColor="@color/textColorBlack"
+        android:textSize="@dimen/bottom_sheet_title_text_size"
+        android:text="QR data" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_qr_codes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/item_qr_data" />
+
+</LinearLayout>
