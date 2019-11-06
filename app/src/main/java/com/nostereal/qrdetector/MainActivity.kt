@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d("M_MainActivity", "Uri from intent is null or the same as the last")
                 return
             }
+            Log.d("M_MainActivity", "Uri: $uri")
             lastUri = uri
             val inputStream = contentResolver.openInputStream(uri)
             val drawableImg = Drawable.createFromStream(inputStream, uri.toString())
@@ -94,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         Log.d("M_MainActivity", "Showing bottom sheet...")
         val bottomSheetDialogFragment =
             RoundedBottomSheetDialogFragment.getInstance()
-        if (!bottomSheetDialogFragment.isVisible)
+//        if (!bottomSheetDialogFragment.isVisible)
             bottomSheetDialogFragment.show(supportFragmentManager, "qrBottomSheet")
         bottomSheetDialogFragment.adapter.qrCodes = barcodes
     }
@@ -102,7 +103,7 @@ class MainActivity : AppCompatActivity() {
     private fun showQRs() {
         val bottomSheetDialogFragment =
             RoundedBottomSheetDialogFragment.getInstance()
-        if (!bottomSheetDialogFragment.isVisible)
+//        if (!bottomSheetDialogFragment.isVisible)
             bottomSheetDialogFragment.show(supportFragmentManager, "qrBottomSheetWithEmptyData")
     }
 
@@ -120,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         val cvs = Canvas(bmpCopy)
         val paint = Paint().apply {
             style = Paint.Style.FILL
-            color = Color.argb(125, 255, 255, 255)
+            color = Color.argb(90, 255, 255, 255)
             strokeWidth = 7f
         }
         var bordersDrawn = 0

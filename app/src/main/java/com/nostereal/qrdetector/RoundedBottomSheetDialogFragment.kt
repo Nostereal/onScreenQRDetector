@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -35,6 +36,7 @@ class RoundedBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         BottomSheetDialog(requireContext(), theme)
+            .apply { window!!.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS) }
 
     companion object {
         private var instance: RoundedBottomSheetDialogFragment? = null
