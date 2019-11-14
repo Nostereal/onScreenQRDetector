@@ -4,9 +4,9 @@
     <dimen name="bottom_sheet_top_padding">8dp</dimen>
     <dimen name="bottom_sheet_bottom_padding">8dp</dimen>
     <dimen name="item_qr_data_vertical_margin">8dp</dimen>
-    <dimen name="item_qr_data_title_start_padding">12dp</dimen>
+    <dimen name="item_qr_data_title_start_padding">32dp</dimen>
     <dimen name="item_qr_data_title_end_padding">4dp</dimen>
-    <dimen name="item_qr_data_raw_value_start_padding">4dp</dimen>
+    <dimen name="item_qr_data_raw_value_start_padding">16dp</dimen>
     <dimen name="item_qr_data_raw_value_end_padding">12dp</dimen>
     <dimen name="margin_size_between_rv_elements">8dp</dimen>
 

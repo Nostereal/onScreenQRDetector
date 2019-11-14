@@ -8,8 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
+import android.view.View
 import androidx.core.graphics.drawable.toBitmap
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseApp
 import com.google.firebase.ml.vision.FirebaseVision
@@ -17,7 +17,6 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.bottom_sheet_dialog_layout.*
 
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class MainActivity : AppCompatActivity() {
@@ -26,19 +25,26 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        imageView.apply {
+            layoutParams.width = dpToPx(150)
+            layoutParams.height = dpToPx(150)
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        if (intent != null)
+        if (intent != null) {
             FirebaseApp.initializeApp(this)
-        handleSendImage(intent)
+            handleSendImage(intent)
+        }
     }
 
     private fun handleSendImage(intent: Intent) {
         (intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as? Uri).let { uri ->
             if (uri == null || uri == lastUri) {
-                Log.d("M_MainActivity", "Uri from intent is null or the same as the last")
+                Log.d("M_MainActivity", "Uri from intent is null or the same as the last\n" +
+                        "Current URI: $uri, Last URI: $lastUri")
                 return
             }
             Log.d("M_MainActivity", "Uri: $uri")
@@ -46,10 +52,17 @@ class MainActivity : AppCompatActivity() {
             val inputStream = contentResolver.openInputStream(uri)
             val drawableImg = Drawable.createFromStream(inputStream, uri.toString())
 
+
+            // TODO: fix the error when qr already handled and you send new qr
+            // expected: new qr replaces previous qr
+            // actual: nothing is happen
             imageView.apply {
                 setImageDrawable(drawableImg)
-                setOnClickListener { showQRs() }
+                setOnClickListener { showQRs(null) }
+                layoutParams.width = drawableImg.intrinsicWidth
+                layoutParams.height = drawableImg.intrinsicHeight
             }
+            textView.visibility = View.GONE
 
             // qr
             val bitmap = drawableImg.toBitmap()
@@ -65,12 +78,12 @@ class MainActivity : AppCompatActivity() {
         val detector =
             FirebaseVision.getInstance().getVisionBarcodeDetector(options)
 
-        val result = detector.detectInImage(image)
+        detector.detectInImage(image)
             .addOnSuccessListener { barcodes ->
                 val boundsList = mutableListOf<Rect?>()
-                for (barcode in barcodes) {
+                val sortedBarcodes = barcodes.sortedWith(compareBy { it.cornerPoints!!.filterNotNull()[0].x })
+                for (barcode in sortedBarcodes) {
                     boundsList.add(barcode.boundingBox)
-//                    val corners = barcode.cornerPoints
                     val rawValue = barcode.rawValue
                     val valueType = barcode.valueType
 
@@ -80,10 +93,9 @@ class MainActivity : AppCompatActivity() {
                         val url = barcode.url!!.url
                         Log.d("M_MainActivity", "qr title: $title, url: $url")
                     }
-                    // todo: draw bounds and other visual features
                 }
                 imageView.setImageBitmap(getBitmapWithRects(bitmapImage, boundsList))
-                showQRs(barcodes)
+                showQRs(sortedBarcodes)
             }
             .addOnFailureListener { e ->
                 Log.e("M_MainActivity", "QR: Something went wrong. $e")
@@ -91,21 +103,21 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    private fun showQRs(barcodes: List<FirebaseVisionBarcode>) {
+    private fun showQRs(barcodes: List<FirebaseVisionBarcode>?) {
         Log.d("M_MainActivity", "Showing bottom sheet...")
         val bottomSheetDialogFragment =
             RoundedBottomSheetDialogFragment.getInstance()
-//        if (!bottomSheetDialogFragment.isVisible)
-            bottomSheetDialogFragment.show(supportFragmentManager, "qrBottomSheet")
-        bottomSheetDialogFragment.adapter.qrCodes = barcodes
+        bottomSheetDialogFragment.show(supportFragmentManager, "qrBottomSheet")
+        if (barcodes != null) {
+            bottomSheetDialogFragment.adapter.qrCodes = barcodes
+        }
     }
 
-    private fun showQRs() {
-        val bottomSheetDialogFragment =
-            RoundedBottomSheetDialogFragment.getInstance()
-//        if (!bottomSheetDialogFragment.isVisible)
-            bottomSheetDialogFragment.show(supportFragmentManager, "qrBottomSheetWithEmptyData")
-    }
+//    private fun showQRs() {
+//        val bottomSheetDialogFragment =
+//            RoundedBottomSheetDialogFragment.getInstance()
+//        bottomSheetDialogFragment.show(supportFragmentManager, "qrBottomSheetWithEmptyData")
+//    }
 
 
     private fun redirectToBrowser(url: String) {

@@ -25,9 +25,6 @@ class ExampleInstrumentedTest {
         assertEquals("com.nostereal.qrdetector", appContext.packageName)
     }
 
-
-    @get:Rule
-    var scenario = activity
     @Test
     fun isBottomSheetShown() {
 

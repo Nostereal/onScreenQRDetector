@@ -32,22 +32,13 @@ class QrAdapter : RecyclerView.Adapter<QrAdapter.QrDataViewHolder>() {
 
         fun bindData(barcode: FirebaseVisionBarcode) {
             itemView.apply {
-                val itemFormatData = when (barcode.valueType) {
-                    FirebaseVisionBarcode.TYPE_URL -> barcode.url!!.title to barcode.url!!.url
-                    FirebaseVisionBarcode.TYPE_TEXT -> "Text" to barcode.displayValue
-                    else -> "Unsupported type" to barcode.displayValue
-                }
+                val id = adapterPosition
+                val content = barcode.displayValue
 
-                val title = itemFormatData.first
-                val content = itemFormatData.second
-                Log.d("M_QrDataViewHolder", "Title: $title, content: $content")
-                if (content != null) {
-                    if (title.isNullOrEmpty())
-                        qrTitle.visibility = View.GONE
-                    else
-                        qrTitle.text = title
-                    qrRawValue.text = content
-                }
+                Log.d("M_QrDataViewHolder", "Id: $id, content: $content")
+
+                qrId.text = id.toString()
+                qrRawValue.text = content ?: ":( There is nothing here"
             }
         }
     }

@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/item_qr_data_vertical_margin"
         android:gravity="center"
-        android:text="QR data"
+        android:text="@string/bottom_sheet_title"
         android:textColor="@color/textColorBlack"
         android:textSize="@dimen/bottom_sheet_title_text_size"
         android:visibility="visible" />
@@ -20,8 +20,11 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/bottomSheetDialogTitle"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="@dimen/margin_size_between_rv_elements"
-        android:background="@color/common_google_signin_btn_text_dark_disabled" />
+        android:layout_marginEnd="16dp"
+        android:background="@color/cardview_dark_background"
+        android:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_qr_codes"
