@@ -1,4 +1,4 @@
-package com.nostereal.qrdetector
+package com.nostereal.qrdetector.ui
 
 import android.content.Intent
 import android.graphics.*
@@ -10,26 +10,45 @@ import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseApp
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.nostereal.qrdetector.R
+import com.nostereal.qrdetector.dpToPx
+import com.nostereal.qrdetector.provideViewModel
+import com.nostereal.qrdetector.viewmodels.QrViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
+import kotlin.math.sqrt
 
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-class MainActivity : AppCompatActivity() {
+class QrActivity : AppCompatActivity() {
     private var lastUri: Uri? = null
+
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    private lateinit var viewModel: QrViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        imageView.apply {
-            layoutParams.width = dpToPx(150)
-            layoutParams.height = dpToPx(150)
-        }
+        viewModel = provideViewModel(viewModelFactory)
+        viewModel.qrDrawable.observe(this, Observer { drawable ->
+            imageView.apply {
+                visibility = View.VISIBLE
+                setImageDrawable(drawable)
+                setOnClickListener { showQRs(null) }
+            }
+
+            textView.visibility = View.GONE
+            selectImageFromGalleryBtn.visibility = View.GONE
+        })
     }
 
     override fun onStart() {
@@ -56,13 +75,6 @@ class MainActivity : AppCompatActivity() {
             // TODO: fix the error when qr already handled and you send new qr
             // expected: new qr replaces previous qr
             // actual: nothing is happen
-            imageView.apply {
-                setImageDrawable(drawableImg)
-                setOnClickListener { showQRs(null) }
-                layoutParams.width = drawableImg.intrinsicWidth
-                layoutParams.height = drawableImg.intrinsicHeight
-            }
-            textView.visibility = View.GONE
 
             // qr
             val bitmap = drawableImg.toBitmap()
@@ -81,7 +93,12 @@ class MainActivity : AppCompatActivity() {
         detector.detectInImage(image)
             .addOnSuccessListener { barcodes ->
                 val boundsList = mutableListOf<Rect?>()
-                val sortedBarcodes = barcodes.sortedWith(compareBy { it.cornerPoints!!.filterNotNull()[0].x })
+                val sortedBarcodes = barcodes
+                    .sortedWith(compareBy { barcode ->
+                        val upperLeftCorner = barcode.cornerPoints!!.filterNotNull()[0]
+                        sqrt((upperLeftCorner.x * upperLeftCorner.x +
+                                upperLeftCorner.y * upperLeftCorner.y).toFloat())
+                    })
                 for (barcode in sortedBarcodes) {
                     boundsList.add(barcode.boundingBox)
                     val rawValue = barcode.rawValue
@@ -111,21 +128,6 @@ class MainActivity : AppCompatActivity() {
         if (barcodes != null) {
             bottomSheetDialogFragment.adapter.qrCodes = barcodes
         }
-    }
-
-//    private fun showQRs() {
-//        val bottomSheetDialogFragment =
-//            RoundedBottomSheetDialogFragment.getInstance()
-//        bottomSheetDialogFragment.show(supportFragmentManager, "qrBottomSheetWithEmptyData")
-//    }
-
-
-    private fun redirectToBrowser(url: String) {
-        val intent = Intent().apply {
-            action = Intent.ACTION_VIEW
-            data = Uri.parse(url)
-        }
-        startActivity(intent)
     }
 
     private fun getBitmapWithRects(bitmap: Bitmap, boundsList: List<Rect?>): Bitmap {

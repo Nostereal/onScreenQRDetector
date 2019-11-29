@@ -1,4 +1,4 @@
-package com.nostereal.qrdetector
+package com.nostereal.qrdetector.adapters
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.nostereal.qrdetector.R
 import kotlinx.android.synthetic.main.item_qr_data.view.*
 import kotlin.properties.Delegates
 
@@ -16,7 +17,9 @@ class QrAdapter : RecyclerView.Adapter<QrAdapter.QrDataViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QrDataViewHolder {
-        return QrDataViewHolder(parent)
+        return QrDataViewHolder(
+            parent
+        )
     }
 
     override fun getItemCount(): Int = qrCodes.size

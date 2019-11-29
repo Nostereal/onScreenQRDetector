@@ -1,4 +1,4 @@
-package com.nostereal.qrdetector
+package com.nostereal.qrdetector.ui
 
 import android.app.Dialog
 import android.os.Bundle
@@ -10,14 +10,16 @@ import android.view.WindowManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.bottom_sheet_dialog_layout.*
+import com.nostereal.qrdetector.adapters.QrAdapter
+import com.nostereal.qrdetector.R
 import kotlinx.android.synthetic.main.bottom_sheet_dialog_layout.view.*
-import kotlinx.android.synthetic.main.item_qr_data.view.*
 
 class RoundedBottomSheetDialogFragment : BottomSheetDialogFragment() {
-    val adapter: QrAdapter = QrAdapter()
+    val adapter: QrAdapter =
+        QrAdapter()
 
-    override fun getTheme(): Int = R.style.BottomSheetDialogTheme
+    override fun getTheme(): Int =
+        R.style.BottomSheetDialogTheme
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,7 +44,8 @@ class RoundedBottomSheetDialogFragment : BottomSheetDialogFragment() {
         private var instance: RoundedBottomSheetDialogFragment? = null
         fun getInstance(): RoundedBottomSheetDialogFragment {
             if (instance == null)
-                instance = RoundedBottomSheetDialogFragment()
+                instance =
+                    RoundedBottomSheetDialogFragment()
             return instance!!
         }
     }
