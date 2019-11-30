@@ -6,6 +6,7 @@ import com.nostereal.qrdetector.viewmodels.QrViewModel
 import com.nostereal.qrdetector.viewmodels.ViewModelFactory
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.multibindings.IntoMap
 
 @Module

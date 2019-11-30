@@ -1,8 +1,12 @@
 package com.nostereal.qrdetector
 
+import kotlinx.coroutines.*
 import org.junit.Test
 
 import org.junit.Assert.*
+import java.util.concurrent.FutureTask
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Example local unit test, which will execute on the development machine (host).
