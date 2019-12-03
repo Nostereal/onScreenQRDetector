@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseApp
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.nostereal.qrdetector.R
@@ -22,6 +21,8 @@ class QrActivity : DaggerAppCompatActivity() {
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: QrViewModel
 
+    @Inject lateinit var bottomSheetDialogFragment: RoundedBottomSheetDialogFragment
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -35,11 +36,7 @@ class QrActivity : DaggerAppCompatActivity() {
         intent?.also { intent ->
             FirebaseApp.initializeApp(this)
             viewModel.viewModelScope.launch {
-                val drawable = viewModel.getDrawableFromIntent(intent)
-                if (drawable == null) {
-                    showSnackbarError()
-                    return@launch
-                }
+                val drawable = viewModel.getDrawableFromIntent(intent) ?: return@launch
 
                 imageView.apply {
                     visibility = View.VISIBLE
@@ -57,17 +54,10 @@ class QrActivity : DaggerAppCompatActivity() {
         }
     }
 
-    private fun showSnackbarError() {
-        Snackbar.make(root_view, "Oops, there is no image :(", Snackbar.LENGTH_SHORT).show()
-    }
-
     private fun showQRs(barcodes: List<FirebaseVisionBarcode>?) {
         Log.d("M_MainActivity", "Showing bottom sheet...")
-        val bottomSheetDialogFragment =
-            RoundedBottomSheetDialogFragment.getInstance()
         bottomSheetDialogFragment.show(supportFragmentManager, "qrBottomSheet")
-        if (barcodes != null) {
-            bottomSheetDialogFragment.adapter.qrCodes = barcodes
-        }
+
+        barcodes?.also(bottomSheetDialogFragment::passQrsToAdapter)
     }
 }
