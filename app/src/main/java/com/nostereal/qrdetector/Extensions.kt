@@ -10,11 +10,11 @@ inline fun <reified VM : ViewModel> FragmentActivity.provideViewModel(
     provider: ViewModelProvider.Factory
 ) = ViewModelProviders.of(this, provider).get(VM::class.java)
 
-fun <LM, ADAPTER, VH> RecyclerView.init(
+fun <LM, ADAPTER> RecyclerView.init(
     lm: LM,
     adapter: ADAPTER
 ) where LM : RecyclerView.LayoutManager,
-        ADAPTER : RecyclerView.Adapter<VH> = apply {
+        ADAPTER : RecyclerView.Adapter<*> = apply {
     layoutManager = lm
     this.adapter = adapter
 }

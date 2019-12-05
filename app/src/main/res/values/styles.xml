@@ -9,6 +9,8 @@
     </style>
 
 
+
+    <!-- Bottom Sheet Styles -->
     <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/bg_bottom_sheet_dialog_fragment</item>
     </style>
@@ -18,10 +20,18 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+
         <item name="bottomSheetStyle">@style/BottomSheet</item>
+        <item name="android:windowAnimationStyle">@style/DialogAnim</item>
     </style>
 
 
     <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog" />
+
+    <!-- Bottom Sheet Animations -->
+    <style name="DialogAnim">
+        <item name="android:windowExitAnimation">@anim/slide_down_dialog</item>
+        <item name="android:windowEnterAnimation">@anim/slide_up_dialog</item>
+    </style>
 
 </resources>
