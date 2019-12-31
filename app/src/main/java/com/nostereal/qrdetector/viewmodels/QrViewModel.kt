@@ -11,12 +11,13 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.tasks.Task
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -58,8 +59,7 @@ class QrViewModel @Inject constructor(private val context: Application) :
             val options = FirebaseVisionBarcodeDetectorOptions.Builder()
                 .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_QR_CODE)
                 .build()
-            val detector =
-                FirebaseVision.getInstance().getVisionBarcodeDetector(options)
+            val detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
 
             suspendCoroutine<Drawable?> { continuation ->
                 detector.detectInImage(image)
@@ -114,5 +114,10 @@ class QrViewModel @Inject constructor(private val context: Application) :
 
         Log.d("M_QrViewModel", "Borders were drawn: $bordersDrawn")
         return bmpCopy.toDrawable(context.resources)
+    }
+
+    override fun onCleared() {
+        viewModelScope.cancel()
+        super.onCleared()
     }
 }
