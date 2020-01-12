@@ -1,17 +1,22 @@
 package com.nostereal.qrdetector.ui
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseApp
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.nostereal.qrdetector.R
 import com.nostereal.qrdetector.provideViewModel
+import com.nostereal.qrdetector.handlePermission
+import com.nostereal.qrdetector.requestPermission
 import com.nostereal.qrdetector.viewmodels.QrViewModel
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -24,10 +29,12 @@ class QrActivity : DaggerAppCompatActivity() {
         const val PICK_IMAGE_REQUEST_CODE = 101
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: QrViewModel
 
-    @Inject lateinit var bottomSheetDialogFragment: RoundedBottomSheetDialogFragment
+    @Inject
+    lateinit var bottomSheetDialogFragment: RoundedBottomSheetDialogFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,11 +43,22 @@ class QrActivity : DaggerAppCompatActivity() {
         viewModel = provideViewModel(viewModelFactory)
 
         selectImageFromGalleryBtn.setOnClickListener {
-            val intent = Intent().apply {
-                type = "image/*"
-                action = Intent.ACTION_GET_CONTENT
-            }
-            startActivityForResult(Intent.createChooser(intent, "Select a picture"), PICK_IMAGE_REQUEST_CODE)
+
+            handlePermission(
+                permission = Manifest.permission.READ_EXTERNAL_STORAGE,
+                requestCode = PICK_IMAGE_REQUEST_CODE,
+                onGranted = { requestCode -> pickImageFromGallery(requestCode) },
+                onDenied = { permission, requestCode -> requestPermission(permission, requestCode) },
+                onExplanationNeeded = { permission, requestCode ->
+                    Snackbar
+                        .make(
+                            root_view,
+                            R.string.read_external_storage_rationale,
+                            Snackbar.LENGTH_INDEFINITE
+                        )
+                        .setAction(R.string.snackbar_grant_action) { requestPermission(permission, requestCode) }
+                        .show()
+                })
         }
     }
 
@@ -82,6 +100,38 @@ class QrActivity : DaggerAppCompatActivity() {
                 showQRs(drawable)
             }
         }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when(requestCode) {
+            PICK_IMAGE_REQUEST_CODE -> {
+                if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    pickImageFromGallery(requestCode)
+                } else {
+                    // permission wasn't granted :(
+                    // disable all stuff related to this permission
+                    Snackbar.make(
+                        root_view,
+                        R.string.permission_not_granted_message,
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+            }
+            else -> {  }
+        }
+
+    }
+
+    private fun pickImageFromGallery(requestCode: Int) {
+        val intent = Intent().apply {
+            type = "image/*"
+            action = Intent.ACTION_PICK
+        }
+        startActivityForResult(Intent.createChooser(intent, "Select a picture"), requestCode)
     }
 
     private fun openBottomSheetWithQRs(barcodes: List<FirebaseVisionBarcode>?) {

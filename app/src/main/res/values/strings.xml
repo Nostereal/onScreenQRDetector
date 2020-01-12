@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">QR Detector</string>
     <string name="bottom_sheet_title">QR data</string>
-    <string name="no_image_uploaded_message">Oops, it looks like you have not upload an image to detect yet.</string>
+    <string name="no_image_uploaded_message">Oops, it looks like you haven\'t uploaded an image to recognize yet.</string>
     <string name="select_image_from_gallery_btn_text">Upload an image</string>
     <string name="image_view_content_description">Shows an image with a QR code</string>
+    <string name="read_external_storage_rationale">Need this permission to pick a picture from gallery</string>
+    <string name="snackbar_grant_action">GRANT</string>
+    <string name="permission_not_granted_message">Now you can\'t select image from gallery</string>
 </resources>
